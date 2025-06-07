@@ -4,6 +4,10 @@
 <title>AI Chat</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
+  html,
+  body {
+    box-sizing: border-box;
+  }
   body {
     font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
@@ -13,7 +17,7 @@
     height: 100vh;
     background-color: #F8F8F8; /* 浅灰色背景，模拟常见聊天应用 */
     overflow: hidden; /* 防止body滚动 */
-    padding-top: 40px; /* 增加顶部内边距，避免被状态栏遮挡 */
+    /* padding-top: 40px; /* 增加顶部内边距，避免被状态栏遮挡 */ */
   }
   #chat-box {
     flex-grow: 1;
@@ -21,7 +25,7 @@
     overflow-y: auto; /* 允许聊天内容滚动 */
     display: flex;
     flex-direction: column;
-    padding-bottom: 20px; /* 底部留白，避免消息被输入框遮挡 */
+    padding-bottom: 65px; /* 底部留白，避免消息被输入框遮挡 */
   }
   .message-container {
     display: flex;
@@ -92,6 +96,11 @@
     border-top: 1px solid #E0E0E0;
     align-items: center;
     box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* 输入框上方阴影 */
+    position: fixed; /* 固定在底部 */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100; /* 确保在其他内容之上 */
   }
   #input-text {
     flex-grow: 1;
@@ -160,7 +169,7 @@
 
   // 在页面加载时发送初始欢迎消息
   window.onload = function() {
-    addMessage('Kimi', '你好，我是Kimi，你的AI智能助手。有什么可以帮你的吗？', true);
+    addMessage('Kimi', '你好，我是Kimi，你的AI智能助手。有什么可以帮你做的吗？', true);
   }
 
   // 添加消息到聊天界面
@@ -178,7 +187,7 @@
     if (sender === 'You') {
       messageContainer.classList.add('user-message-container');
       // 用户头像，您可以提供一个链接或者让它隐藏
-      avatarElement.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAADmPMhMAAAACXBIWXMAAAsTAAALEwEAmpwYAAADwUlEQVR4nO2by0tVURjHR6f+0/w0L1z8Iu2K8W71/w0Jq4QIK6vGzRz8iK5tUqIuVFBpUVEGEYRBaGjQy2VQRJCKv3jQ82Z8+TdnjBfO53yfm/Pee19+935nsiYlJSVpXk0pYA9oC9oC1j36G5N/MTA0N4o8z3N80fJ9sWz5f2l/9g7Nf0s+m20x4p39n0fM2u9n0P/N4/uP//x+aMzs7O3l79wY4L4D7Jb0m8Dq4Cj5t7WcO+5d/M+Bw/M7j3b1t7/B23gNPAc+BL825/2gO15eYfA0uA9825/3l1P89u33m96t+c+4n1D/s14M3mD/4B3kUeB84BHzj4/N9n+f4sR8DlwB/21s97i4/d6r4E93v/Pz62o3w3f7+m78f/7O78BtwD3gPfGfO/aXgYlP8g20uJ/2D7M9u+z2dK7t5h2f9gPjNnvfT97s879bJd3VvF7x7m3f3+347xL/8g/h/o1Hw5303/379f//9g7y9fQf4mS0uJ/2v+3pM//e9N/+6+3b8XoVq4K9l03/379n/h3wF7B4uJ/2wz9m829O3/2+z+d+5w7h/o1/7k9Jm/2/83vD//7d+6+y8072/8j//473G5n/fT/+4/b/53tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tKysq08/w/p2X8N/0z2cKqAAAAAElFTkSuQmCC'; // 用户头像的base64编码，避免额外文件
+      avatarElement.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAADmPMhMAAAACXBIWXMAAAsTAAALEwEAmpwYAAADwUlEQVR4nO2by0tVURjHR6f+0/w0L1z8Iu2K8W71/w0Jq4QIK6vGzRz8iK5tUqIuVFBpUVEGEYRBaGjQy2VQRJCKv3jQ82Z8+TdnjBfO53yfm/Pee19+935nsiYlJSVpXk0pYA9oC9oC1j36G5N/MTA0N4o8z3N80fJ9sWz5f2l/9g7Nf0s+m20x4p39n0fM2u9n0P/N4/uP//x+aMzs7O3l79wY4L4D7Jb0m8Dq4Cj5t7WcO+5d/M+Bw/M7j3b1t7/B23gNPAc+BL825/2gO15eYfA0uA9825/3l1P89u33m96t+c+4n1D/s14M3mD/4B3kUeB84BHzj4/N9n+f4sR8DlwB/21s97i4/d6r4E93v/Pz62o3w3f7+m78f/7O78BtwD3gPfGfO/aXgYlP8g22uJ/2D7M9u+z2dK7t5h2f9gPjNnvfT97s879bJd3VvF7x7m3f3+347xL/8g/h/o1Hw5303/379f//9g7y9fQf4mS0uJ/2v+3pM//e9N/+6+3b8XoVq4K9l03/379n/h3wF7B4uJ/2wz9m829O3/2+z+d+5w7h/o1/7k9Jm/2/83vD//7d+6+y8072/8j//473G5n/fT/+4/b/53tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tJnv/jM25+/H9L93tKysq08/w/p2X8N/0z2cKqAAAAAElFTkSuQmCC'; // 用户头像的base64编码，避免额外文件
       messageContainer.appendChild(messageBubble);
       messageContainer.appendChild(avatarElement);
     } else {
