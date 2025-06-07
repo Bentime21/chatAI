@@ -2,66 +2,122 @@
 <html>
 <head>
 <title>AI Chat</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> // 添加了这一行
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
   body {
-    font-family: sans-serif;
+    font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #F8F8F8; /* 浅灰色背景，模拟常见聊天应用 */
+    overflow: hidden; /* 防止body滚动 */
   }
   #chat-box {
     flex-grow: 1;
     padding: 10px;
-    overflow-y: auto;
+    overflow-y: auto; /* 允许聊天内容滚动 */
     display: flex;
     flex-direction: column;
+    padding-bottom: 20px; /* 底部留白，避免消息被输入框遮挡 */
   }
-  .message {
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    border-radius: 15px;
-    max-width: 80%;
+  .message-container {
+    display: flex;
+    margin-bottom: 15px;
+    align-items: flex-start; /* 头像和消息顶部对齐 */
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    flex-shrink: 0; /* 防止头像被压缩 */
+  }
+  .user-message-container {
+    justify-content: flex-end; /* 用户消息靠右 */
+  }
+  .user-message-container .avatar {
+    order: 2; /* 头像在右侧 */
+    margin-right: 0;
+    margin-left: 10px;
+  }
+
+  .message-bubble {
+    padding: 12px 15px;
+    border-radius: 18px;
+    max-width: calc(100% - 100px); /* 限制消息气泡宽度，留出头像和边距 */
     word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1); /* 轻微阴影效果 */
   }
-  .user-message {
-    align-self: flex-end;
-    background-color: #007bff;
+  .user-message-container .message-bubble {
+    background-color: #007AFF; /* 蓝色气泡 */
     color: white;
+    margin-left: auto; /* 靠右对齐 */
   }
-  .kimi-message {
-    align-self: flex-start;
-    background-color: #e9e9eb;
-    color: black;
+  .kimi-message-container .message-bubble {
+    background-color: #FFFFFF; /* 白色气泡 */
+    color: #333333;
+    margin-right: auto; /* 靠左对齐 */
   }
+  .kimi-message-container .message-bubble::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: -8px; /* 小三角 */
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-right: 8px solid #FFFFFF;
+    border-bottom: 8px solid transparent;
+  }
+  .user-message-container .message-bubble::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: -8px; /* 小三角 */
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-left: 8px solid #007AFF;
+    border-bottom: 8px solid transparent;
+  }
+
   #input-area {
     display: flex;
     padding: 10px;
     background-color: #fff;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #E0E0E0;
+    align-items: center;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* 输入框上方阴影 */
   }
   #input-text {
     flex-grow: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 10px 15px;
+    border: 1px solid #E0E0E0;
+    border-radius: 20px;
     margin-right: 10px;
     font-size: 16px;
+    min-height: 20px; /* 最小高度 */
+    outline: none; /* 移除选中边框 */
+    resize: none; /* 禁止文本框拉伸 */
+    overflow-y: hidden; /* 隐藏滚动条直到内容溢出 */
+    line-height: 1.5;
   }
   #send-button {
-    padding: 8px 15px;
-    background-color: #28a745;
+    padding: 10px 20px;
+    background-color: #007AFF;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 20px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
   }
   #send-button:disabled {
-    background-color: #ccc;
+    background-color: #A0C8FF; /* 禁用状态颜色 */
     cursor: not-allowed;
   }
 </style>
@@ -73,7 +129,7 @@
 </div>
 
 <div id="input-area">
-  <input type="text" id="input-text" placeholder="输入消息...">
+  <textarea id="input-text" placeholder="输入消息..." rows="1"></textarea>
   <button id="send-button" disabled>发送</button>
 </div>
 
@@ -83,28 +139,58 @@
   const sendButton = document.getElementById('send-button');
 
   // === 请将这里替换为您的 Kimi API 地址 ===
-  const kimiApiUrl = 'YOUR_KIMI_API_ENDPOINT';
+  const kimiApiUrl = 'https://api.moonshot.cn/v1/chat/completions';
   // === 请将这里替换为您的 Kimi API 密钥 ===
-  const apiKey = 'YOUR_KIMI_API_KEY';
+  const apiKey = 'sk-8I7HJ2SuMLkwKvt8Bw337nmCfqiJf9HXwHXGzeTe4VAshAMU';
+  // === 请将这里替换为您的 Kimi 头像图片地址（例如: kimi_avatar.png） ===
+  const kimiAvatarUrl = 'kimi_avatar.png'; // 假设图片在同一目录下
+
+  // 调整输入框高度
+  inputText.addEventListener('input', () => {
+    inputText.style.height = 'auto'; // Reset height to auto
+    inputText.style.height = inputText.scrollHeight + 'px'; // Set height to scrollHeight
+    sendButton.disabled = !inputText.value.trim(); // 监听输入框内容变化，启用/禁用发送按钮
+    chatBox.scrollTop = chatBox.scrollHeight; // 输入时也滚动到底部
+  });
+  inputText.addEventListener('focus', () => {
+    chatBox.scrollTop = chatBox.scrollHeight; // 输入框获得焦点时滚动到底部
+  });
+
 
   // 在页面加载时发送初始欢迎消息
   window.onload = function() {
-    addMessage('Kimi', '你好，我是AI助手，有什么可以帮你的吗？'); // 显示一个本地的欢迎消息，然后调用API让Kimi回复
-    callKimiAPI('你好，我是AI助手，有什么可以帮你的吗？');
+    addMessage('Kimi', '你好，我是Kimi，你的AI智能助手。有什么可以帮你的吗？', true);
   }
 
   // 添加消息到聊天界面
-  function addMessage(sender, text) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message');
+  function addMessage(sender, text, isInitial = false) {
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('message-container');
+
+    const avatarElement = document.createElement('img');
+    avatarElement.classList.add('avatar');
+
+    const messageBubble = document.createElement('div');
+    messageBubble.classList.add('message-bubble');
+    messageBubble.textContent = text;
+
     if (sender === 'You') {
-      messageElement.classList.add('user-message');
+      messageContainer.classList.add('user-message-container');
+      avatarElement.src = 'user_avatar.png'; // 如果有用户头像，请替换为您的用户头像地址
+      avatarElement.style.visibility = 'hidden'; // 用户头像默认隐藏，或您提供一个用户头像
+      messageContainer.appendChild(messageBubble);
+      messageContainer.appendChild(avatarElement);
     } else {
-      messageElement.classList.add('kimi-message');
+      messageContainer.classList.add('kimi-message-container');
+      avatarElement.src = kimiAvatarUrl;
+      messageContainer.appendChild(avatarElement);
+      messageContainer.appendChild(messageBubble);
     }
-    messageElement.textContent = text;
-    chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight; // 滚动到底部
+
+    chatBox.appendChild(messageContainer);
+    if (!isInitial) { // 只有非初始消息才自动滚动
+      chatBox.scrollTop = chatBox.scrollHeight; // 滚动到底部
+    }
   }
 
   // 调用 Kimi API
@@ -129,7 +215,6 @@
 
       const responseData = await response.json();
 
-      // 假设回复内容在 responseData.choices[0].message.content
       if (responseData && responseData.choices && responseData.choices.length > 0 && responseData.choices[0].message && responseData.choices[0].message.content) {
         const kimiReplyContent = responseData.choices[0].message.content;
         addMessage('Kimi', kimiReplyContent);
@@ -151,19 +236,15 @@
       addMessage('You', text);
       callKimiAPI(text);
       inputText.value = '';
+      inputText.style.height = 'auto'; // Reset height after sending
       sendButton.disabled = true; // 发送后禁用按钮直到输入新内容
     }
   });
 
-  // 监听输入框内容变化，启用/禁用发送按钮
-  inputText.addEventListener('input', () => {
-    sendButton.disabled = !inputText.value.trim();
-  });
-
   // 允许按回车键发送消息
   inputText.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault(); // 阻止默认回车行为（换行）
+    if (event.key === 'Enter' && !event.shiftKey) { // 允许Shift+Enter换行
+      event.preventDefault(); // 阻止默认回车行为
       sendButton.click(); // 触发发送按钮点击事件
     }
   });
