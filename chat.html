@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Chat</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        #chat-box {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: white;
+        }
+        .kimi-message {
+            align-self: flex-start;
+            background-color: #e9e9eb;
+            color: black;
+        }
+        #input-area {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ccc;
+        }
+        #input-text {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        #send-button {
+            padding: 8px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #send-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-box">
+    <!-- 聊天消息将在这里显示 -->
+</div>
+
+<div id="input-area">
+    <input type="text" id="input-text" placeholder="输入消息...">
+    <button id="send-button" disabled>发送</button>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const inputText = document.getElementById('input-text');
+    const sendButton = document.getElementById('send-button');
+
+    // === 请将这里替换为您的 Kimi API 地址 ===
+    const kimiApiUrl = 'https://api.moonshot.cn/v1/chat/completions';
+    // === 请将这里替换为您的 Kimi API 密钥 ===
+    const apiKey = 'sk-8I7HJ2SuMLkwKvt8Bw337nmCfqiJf9HXwHXGzeTe4VAshAMU';
+
+    // 在页面加载时发送初始欢迎消息
+    window.onload = function() {
+        addMessage('Kimi', '你好，我是AI助手，有什么可以帮你的吗？'); // 显示一个本地的欢迎消息，然后调用API让Kimi回复
+        callKimiAPI('你好，我是AI助手，有什么可以帮你的吗？');
+    }
+
+    // 添加消息到聊天界面
+    function addMessage(sender, text) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        if (sender === 'You') {
+            messageElement.classList.add('user-message');
+        } else {
+            messageElement.classList.add('kimi-message');
+        }
+        messageElement.textContent = text;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight; // 滚动到底部
+    }
+
+    // 调用 Kimi API
+    async function callKimiAPI(prompt) {
+        try {
+            const response = await fetch(kimiApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "moonshot-v1-8k", // 替换为 Kimi 提供的模型名称
+                    messages: [{ role: "user", content: prompt }]
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+            }
+
+            const responseData = await response.json();
+
+            // 假设回复内容在 responseData.choices[0].message.content
+            if (responseData && responseData.choices && responseData.choices.length > 0 && responseData.choices[0].message && responseData.choices[0].message.content) {
+                const kimiReplyContent = responseData.choices[0].message.content;
+                addMessage('Kimi', kimiReplyContent);
+            } else {
+                addMessage('Kimi', 'Error: Invalid response format from API.');
+                console.error('Invalid response format:', responseData);
+            }
+
+        } catch (error) {
+            addMessage('Kimi', `Error calling API: ${error.message}`);
+            console.error('Error calling Kimi API:', error);
+        }
+    }
+
+    // 发送按钮点击事件
+    sendButton.addEventListener('click', () => {
+        const text = inputText.value.trim();
+        if (text) {
+            addMessage('You', text);
+            callKimiAPI(text);
+            inputText.value = '';
+            sendButton.disabled = true; // 发送后禁用按钮直到输入新内容
+        }
+    });
+
+    // 监听输入框内容变化，启用/禁用发送按钮
+    inputText.addEventListener('input', () => {
+        sendButton.disabled = !inputText.value.trim();
+    });
+
+    // 允许按回车键发送消息
+    inputText.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // 阻止默认回车行为（换行）
+            sendButton.click(); // 触发发送按钮点击事件
+        }
+    });
+
+</script>
+
+</body>
+</html>
